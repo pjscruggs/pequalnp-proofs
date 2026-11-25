@@ -1,0 +1,23 @@
+[
+    [13105, "0xfeeefaeafeaaeaaa", 8664, "0xeac8e080"],
+    [13185, "0xfefefeeafeeeeeea", 8666, "0xeee8eaa8"],
+    [13193, "0xfffefeeafefefeea", 8702, "0xfee8eee8"],
+    [13195, "0xfffefeeefefafeaa", 8709, "0xfeeaece0"],
+    [13197, "0xfffefeeefefafeea", 8710, "0xfeeaece8"],
+    [13201, "0xfffefeeefffefeea", 8715, "0xfeeafee8"],
+    [13205, "0xfffefefeffeefeea", 8721, "0xfeeefae8"],
+    [13207, "0xa8808080a8008000", 8635, "0xe888e080"],
+    [13209, "0xa880888088808080", 8639, "0xe8a8a888"],
+    [13213, "0xa8808880a8800000", 8641, "0xe8a8e800"],
+    [13215, "0xa888888888888880", 8656, "0xeaaaaaa8"],
+    [13217, "0xa888a080a8000000", 8662, "0xeac8e000"],
+    [13219, "0xa888a080a8808080", 8670, "0xeac8e888"],
+    [13221, "0xa888a080a880a000", 8672, "0xeac8e8c0"],
+    [13223, "0xa888a880a8808880", 8678, "0xeae8e8a8"],
+    [13227, "0xa888a880a8888080", 8686, "0xeae8ea88"],
+    [13229, "0xa8a8a880a888a080", 8669, "0xeee8eac8"],
+    [13231, "0xa8a8a880a888a800", 8671, "0xeee8eae0"],
+    [13233, "0xa8a8a888a888a880", 8683, "0xeeeaeae8"],
+    [13235, "0xaaa8a888aaa0a080", 8713, "0xfeeafcc8"],
+    [13237, "0xaaa8a888aaa0a880", 8714, "0xfeeafce8"]
+]
