@@ -6,6 +6,8 @@ A star consists of one whole row or one whole column. A circuit can use any numb
 
 ## The obstruction
 
+A supplementary argument gives lower bounds of five intersections at plane order eight, six at order sixteen, and seven at order twenty-seven. It uses the real rank of the zero-cell matrix and an antichain of row signatures. [Proofs and examples](larger-planes.md)
+
 Take four points A, B, C, D with no three collinear and let X be the intersection of AD and BC. Use the six joining lines as columns.
 
 | Point | AD | BC | CD | BD | AC | AB |
