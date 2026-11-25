@@ -15,7 +15,36 @@ python3 charts.py --emit > row-constraints.jsonl
 python3 charts.py --dual --emit > column-constraints.jsonl
 ```
 
-The first command emits 1,008 distinct point-side constraints in the desk matrix's zero-based labels. Each line at infinity gives 48 affine images of the construction. The code verifies that the coordinate permutations preserve incidence. Projective point–line duality gives another 1,008 constraints on rectangle columns, using `affine_lines` as the domain. Representations such as maximal rectangles or enumerated set-cover candidates can implement the test using equality of integer masks. The effect on solver runtime has not been benchmarked.
+The first command emits 1,008 distinct point-side constraints in the desk matrix's zero-based labels. Each line at infinity gives 48 affine images of the construction. The code verifies that the coordinate permutations preserve incidence. Projective point–line duality gives another 1,008 constraints on rectangle columns, using `affine_lines` as the domain.
+
+### Using the filter in a search
+
+`TraceIndex` builds an index once. Each search branch pushes fixed point or line masks and pops them on backtracking. Multiple rectangles matching the same trace count once. Here is a point-side example. The line side works the same way with the dual charts.
+
+```python
+from charts import charts
+from trace_filter import TraceIndex
+
+state = TraceIndex(charts()).state()
+# At a search node with at most 13 already-fixed rectangles
+if not state.rejects_next(candidate_point_mask):
+    state.push(candidate_point_mask)
+    try:
+        visit_child()
+    finally:
+        state.pop()
+```
+
+The benchmark enumerates all 25,235 maximal rectangles as completions of each of 105 fixed 13-rectangle prefixes per cohort. The first two cohorts delete every pair from a known 15-cover. The other two use a fixed random seed. Run `python3 bench_trace_filter.py` to compare the filter with direct trace counting, exhaustive completion, and the exact one-slot decision test.
+
+| Starting rectangles | Candidates excluded out of 2,649,675 | Entire prefixes excluded out of 105 |
+|---|---:|---:|
+| Lift of the eleven affine rectangles | 2,649,675 | 105 |
+| Seven affine rectangles plus six sampled maximal rectangles | 29,421 | 1 |
+| Project's L-meta-9351 witness | 0 | 0 |
+| Thirteen sampled maximal rectangles | 0 | 0 |
+
+In the affine-derived cohort a local run took 0.005 seconds with the filter and 0.159 seconds scanning the candidate pool. On the seven-trace cohort the filter cost more than the enumeration time it saved. This supports pruning branches that retain many affine traces. A full solver speedup remains unmeasured. For a decision problem with exactly one slot left, collect the rows and columns of all uncovered cells and test whether their product avoids incidence. This exact test took under a millisecond per 105 prefixes in each cohort.
 
 ## Replaying the proof
 
@@ -37,6 +66,10 @@ A positive control finds a 15-cover retaining all eleven traces. For the exclusi
 | 1, 2, 5 | 20 |
 
 The generator represents each rectangle by its point set. Every line disjoint from that set can safely be included as a column. For each nonincident pair the formula requires a rectangle selecting the point and admitting the line. Lexicographic ordering only permutes the six unrestricted slots. The generator also checks the isomorphism with the desk matrix at all 441 entries. The LRAT checker verifies the generated formulas. The reduction to those formulas and the symmetry enumeration are supplied as inspectable Python.
+
+### Independent conflict-graph encoding
+
+`python3 affine_coloring_check.py --solver cadical --checker lrat-trim` regenerates a second set of five certificates. It shares the checked incidence matrix, fixed traces, and symmetry enumeration with the original generator. Its SAT encoding is independent. Give each of the 336 nonincidences a vertex. Two vertices conflict if either cross-pair is incident. Each color class lies in one rectangle because its row and column projections contain only nonincidences. For a fixed trace, a color admits only vertices whose affine point, if present, belongs to the trace and whose line avoids the whole trace. Adding all required trace points to that rectangle is then safe. Conversely, any retained-trace cover supplies such a coloring. The separate encoding and LRAT checker reproduced all five exclusions and the satisfiable 15-cover control.
 
 ## The affine construction
 
