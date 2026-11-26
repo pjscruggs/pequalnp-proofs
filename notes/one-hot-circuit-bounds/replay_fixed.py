@@ -1,4 +1,4 @@
-"""Replay the fixed-family lower bounds on a local copy of L_meta_19358.lean."""
+"""Replay the fixed-product lower bounds for the 128- and 32-row witnesses."""
 import re
 import sys
 from collections import Counter
@@ -9,19 +9,26 @@ from pathlib import Path
 
 def supports(path):
     source = path.read_text(encoding="utf-8-sig")
-    codes = re.findall(r"\((true|false),(\d+),(\d+)\)", source.split("def codes", 1)[1].split("def circuit", 1)[0])
-    wires = [1 << i for i in range(256)]
+    if "Fin 128" in source:
+        width = 128
+        block = source.split("def codes", 1)[1].split("def circuit", 1)[0]
+    else:
+        assert "Fin 32" in source
+        width = 32
+        block = source.split("let codes", 1)[1].split("let C :", 1)[0]
+    codes = re.findall(r"\((true|false|0|1),\s*(\d+),\s*(\d+)\)", block)
+    wires = [1 << i for i in range(2 * width)]
     products = []
     for op, left, right in codes:
         a, b = wires[int(left)], wires[int(right)]
-        if op == "true":
+        if op in ("true", "1"):
             wires.append(None if a is None or b is None else a | b)
         else:
             assert a is not None and b is not None
             products.append((a, b))
             wires.append(None)
-    assert len(codes) == 1500 and len(products) == 64
-    return [s for pair in products for s in pair]
+    assert (width, len(codes), len(products)) in ((128, 1500, 64), (32, 180, 16), (32, 178, 16))
+    return width, [s for pair in products for s in pair]
 
 
 def local_counts(target, others):
@@ -60,15 +67,17 @@ def bound(family, private):
 
 
 def main(path):
-    outputs = supports(path)
-    row_mask = (1 << 128) - 1
-    row = [s & row_mask for s in outputs]
-    col = [s >> 128 for s in outputs]
-    assert len(set(row)) == len(set(col)) == 128
+    width, outputs = supports(path)
     fixed = bound(outputs, False)
+    print("fixed OR charge", sum(fixed), "fixed topology", ceil(sum(fixed))+len(outputs)-1)
+    if width == 32:
+        return
+    row_mask = (1 << width) - 1
+    row = [s & row_mask for s in outputs]
+    col = [s >> width for s in outputs]
+    assert len(set(row)) == len(set(col)) == 128
     row_private = bound(row, True)
     col_private = bound(col, True)
-    print("fixed OR charge", sum(fixed), "fixed topology", ceil(sum(fixed))+127)
     loss = [v - (a+b)/2 for v, a, b in zip(fixed, row_private, col_private)]
     pair_loss = sorted((a+b for a, b in zip(loss[::2], loss[1::2])), reverse=True)
     for s in [0, 17, 24, 25, 26]:

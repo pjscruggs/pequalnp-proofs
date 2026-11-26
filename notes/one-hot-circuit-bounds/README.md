@@ -1,6 +1,17 @@
-# Two one-hot circuit bounds
+# Circuits for four one-hot desk problems
 
-Both circuits are evaluated on inputs with exactly one row and one column active. The two Lean files replay with Lean 4.36.0 and the Mathlib pin at [upstream revision 39ea73ce](https://github.com/open-goat/pequalnp-proofs/tree/39ea73ce33339fb5cf041c5c9ef670ade83a23d2).
+Each circuit is evaluated on inputs with exactly one row and one column active. The Lean files replay with Lean 4.36.0 and the Mathlib pin at [upstream revision 39ea73ce](https://github.com/open-goat/pequalnp-proofs/tree/39ea73ce33339fb5cf041c5c9ef670ade83a23d2).
+
+| Desk unit | Table | Requested gate cap | Result |
+| --- | --- | ---: | --- |
+| L-meta-21834 | 4 × 6, mask 288447 | 8 | Exactly 9 AND/OR gates |
+| L-meta-21008 | 4 × 5, mask 36279 | 8 | Exactly 9 AND/OR gates |
+| L-meta-19373 | Fixed 128 × 128 table | 1,000 | 1,497-gate witness |
+| L-meta-20579 | Fixed 32 × 32 table | 170 | 178-gate witness |
+
+## L-meta-21008 has exact monotone size nine
+
+For this second eight-gate search, column 0 meets all rows. The other neighbors of rows 0 through 3 are respectively {1,2,4}, {2,3}, {1}, and the empty set. A nine-gate circuit takes the OR of column indicator 0 and the three corresponding row-star terms. The same finite exclusion engine described below proves the matching lower bound. [Exact21008.lean](Exact21008.lean) · [Posted statement](https://data.pequalnp.com/data/lemma/L-meta-21008.29fff370ea13.json)
 
 ## L-meta-21834 has exact monotone size nine
 
@@ -25,14 +36,25 @@ For each target, retain one path toward its output for each vertex of the OR cir
 
 These restrictions allow arbitrary overlap and fan-out within the OR network. The result applies to the specified rectangle construction. Other rectangle covers, uses of negation, and circuits with a different arrangement of AND and OR gates can have different costs.
 
+## L-meta-20579 and the fixed 32-by-32 table
+
+The smaller member of the keyed family has a 178-gate circuit, with 162 OR gates, 16 AND gates and output wire 241. We changed the grouping of rectangles and reused their input unions, starting from the 180-gate construction. Independent scalar replay matched all 1,024 promised inputs. The fixed-product charge from the preceding section gives a floor of 175 for the merged arrangement and 171 for the arrangement in our 178-gate file. A 170-gate witness therefore needs another change of products or a different circuit structure. [Keyed32Upper.lean](Keyed32Upper.lean) · [Merged 180-gate construction](https://github.com/open-goat/pequalnp-proofs/pull/28049) · [Assigned table](https://data.pequalnp.com/data/lemma/L-meta-20579.c213b7d13fc9.json)
+
+**Its minimum rectangle cover has 28, 29 or 30 members.** The certificate lists 30 all-one rectangles covering all 411 edges. It also assigns nonnegative integer weights to the edges. Their total is 27,118,395. The heaviest of the 1,893 maximal all-one rectangles has weight 1,000,002. Every all-one rectangle is contained in a maximal one, so 27 rectangles can cover weight at most 27,000,054. This counts rectangles with unrestricted overlap. It leaves open both the exact rectangle count and how many gates a different circuit might use. The verifier uses integer arithmetic and reads the adjacency table from the Lean statement. [Cover and edge weights](rectangle_certificate.json) · [Verifier](check_rectangles.py)
+
 ## Replay
 
 From the root of this checkout, with the pinned Lean dependencies installed, run the following commands. The Python program reads the gate list from the merged source and uses exact rational arithmetic.
 
 ```sh
 python3 notes/one-hot-circuit-bounds/replay_fixed.py lean/PEqualNP/Outside/L_meta_19358.lean
+python3 notes/one-hot-circuit-bounds/replay_fixed.py lean/PEqualNP/Outside/L_meta_20578.lean
+python3 notes/one-hot-circuit-bounds/replay_fixed.py notes/one-hot-circuit-bounds/Keyed32Upper.lean
+python3 notes/one-hot-circuit-bounds/check_rectangles.py
 cd lean
 lake build PEqualNP.Defs PEqualNP.Library.Helpers.PromiseColTree
 lake env lean ../notes/one-hot-circuit-bounds/Exact21834.lean
+lake env lean ../notes/one-hot-circuit-bounds/Exact21008.lean
 lake env lean ../notes/one-hot-circuit-bounds/Keyed128Upper.lean
+lake env lean ../notes/one-hot-circuit-bounds/Keyed32Upper.lean
 ```
