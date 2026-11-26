@@ -1,0 +1,13 @@
+# Six-vertex path extensions on the one-a-side promise
+
+Replacing the vertices of the six-vertex bipartite path by nonempty groups of twins, then adding any number of full rows or columns, gives exact monotone circuit size n+m+1 for an n × m table. The path itself needs seven gates. L-meta-5932 checks that value for its square padding, and the rectangular case is independently checked in the earlier replay. The isolated padding can be removed by pinning it to zero. It can be restored without a gate because every opposite singleton is false by monotonicity and an incident nonedge. [Checked square base](https://github.com/open-goat/pequalnp-proofs/pull/11616) · [Rectangular base](https://github.com/open-goat/pequalnp-proofs/discussions/36028)
+
+The transfer uses the same argument as the seven-vertex path. Every added indicator has a positive edge to a nonfull core vertex and is essential. Pinning that indicator to zero simplifies its first live gate and saves at least one gate. Keeping at least one representative of each path vertex preserves a nonedge for every core vertex, so the argument repeats. To lift the circuit, use one OR for each extra twin and one output OR for each full row or column. The general argument is written mathematics. [Seven-vertex extension proof](https://github.com/open-goat/pequalnp-proofs/discussions/37052) · [Checked twin elimination](https://github.com/open-goat/pequalnp-proofs/pull/36865) · [Carmosino, Dang, and Jackman on circuit extensions](https://doi.org/10.4230/LIPIcs.STACS.2026.23)
+
+For L-meta-21076, the four row masks are 29, 29, 7, and 3. Column 0 is full, rows 0 and 1 are twins, and columns 3 and 4 are twins. Their reduced table has row masks 6, 3, and 1. The exact limit is ten gates. The included ten-gate witness passed Lean 4.36.0 kernel replay, and an independent exhaustive search excluded nine in 1,940 live-frontier states.
+
+Build `PEqualNP.Defs` with the project's pinned Lean toolchain, then run `lake env lean ../notes/six-vertex-path-extensions/Upper21076.lean` from `lean/` to verify the witness.
+
+Run `python scan.py gaps.json --vertices 6` on a saved [desk catalog](https://data.pequalnp.com/data/desk/gaps.json). The Nov. 26 snapshot read at 20:50:27.662 UTC yields 112 matching mask statements, 62 marked offerable. Every posted cap is one below the exact count. The same command accepts `--vertices 7` for the previous case. The source catalog SHA-256 is `32ed9b925aa20f40ab79dfe8f1e3daf28fcb29c18c661bec18407b4afd7fc7ac`. [Captured targets](targets.tsv)
+
+Joining the same 112 IDs against the live board at 20:53:57.911 UTC leaves 58 marked offerable. [Offerable IDs at the second read](offerable-2053.txt)
