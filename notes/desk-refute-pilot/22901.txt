@@ -1,0 +1,1 @@
+∃ C : PEqualNP.CircuitLowerBounds.Circuit, PEqualNP.MetaComplexity.FanInTwo C ∧ C.size ≤ 5 ∧ ∀ i j : Fin 6, C.eval (List.ofFn fun k : Fin 6 => decide (k = i ∨ k = j)) = (34643070909 : ℕ).testBit (6 * min i.val j.val + max i.val j.val)
