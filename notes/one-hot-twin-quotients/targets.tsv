@@ -1,0 +1,16 @@
+gap	rows	columns	mask	posted_cap	exact_cost	offerable	open_prs
+L-meta-20515	3	5	3477	8	9	False	0
+L-meta-21048	4	5	101781	9	10	True	0
+L-meta-21078	4	5	111285	9	10	False	0
+L-meta-21079	4	5	111295	9	10	True	0
+L-meta-23109	3	6	13109	9	10	True	0
+L-meta-23112	3	6	13172	9	10	False	0
+L-meta-23126	3	6	30315	9	10	True	0
+L-meta-23524	4	6	1940203	10	11	False	0
+L-meta-23525	4	6	1940223	10	11	True	0
+L-meta-23705	4	6	839029	10	11	False	0
+L-meta-23706	4	6	839039	10	11	False	0
+L-meta-23710	4	6	840564	10	11	True	0
+L-meta-23754	4	6	843060	10	11	True	0
+L-meta-23755	4	6	843071	10	11	False	0
+L-meta-23832	4	6	1865323	10	11	True	0
